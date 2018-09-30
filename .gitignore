@@ -1,0 +1,4 @@
+*/node_modules
+/live-stream-client/node_modules
+/live-streaming/node_modules
+*/.cache
