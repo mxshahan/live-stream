@@ -22,22 +22,38 @@ class MediaContainer extends React.Component {
 
     componentWillMount() {
         window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
+        this.pc = new RTCPeerConnection({ iceServers: [{ url: 'stun:stun.l.google.com:19302' }] });
+
+        this.pc.onicecandidate = e => {
+            console.log(e, 'onicecandidate');
+            if (e.candidate) {
+                this.props.socket.send({
+                    type: 'candidate',
+                    mlineindex: e.candidate.sdpMLineIndex,
+                    candidate: e.candidate.candidate
+                });
+            }
+        };
+
         this.props.media(this);
     }
 
     componentDidMount() {
         this.props.getUserMedia
             .then(stream => {
-                this.props.socket.emit('stream', stream);
-                this.localVideo.srcObject = this.localStream = stream;
 
-                // this.startRecording();
+                console.log(stream);
+
+                this.localVideo.srcObject = this.localStream = stream;
+                
+                stream.pipe(this.props.socket('emit'))
+               // this.props.socket.emit('stream', stream)
+            }).then(() => {
+                this.startRecording();
             });
-        // this.props.socket.on('message', this.onMessage);
-        // this.props.socket.on('hangup', this.onRemoteHangup);
         this.props.socket.on('view', (video) => {
             console.log(video)
-            this.remoteVideo.srcObject = this.remoteVideo = video;
+            this.remoteVideo.srcObject = this.remoteStream = video;
         })
     }
 
@@ -50,7 +66,7 @@ class MediaContainer extends React.Component {
     }
 
     startRecording = () => {
-        
+        console.log(this.localStream.getTracks())
         this.streamRecorder = this.localStream.getVideoTracks()[0].record();
         setTimeout(this.stopRecording, 10000);
     }
