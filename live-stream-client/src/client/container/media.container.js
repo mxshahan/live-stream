@@ -41,20 +41,12 @@ class MediaContainer extends React.Component {
     componentDidMount() {
         this.props.getUserMedia
             .then(stream => {
-
-                console.log(stream);
-
                 this.localVideo.srcObject = this.localStream = stream;
                 
-                stream.pipe(this.props.socket('emit'))
-               // this.props.socket.emit('stream', stream)
+                this.props.socket.emit('stream', window.URL.createObjectURL(stream))
             }).then(() => {
-                this.startRecording();
-            });
-        this.props.socket.on('view', (video) => {
-            console.log(video)
-            this.remoteVideo.srcObject = this.remoteStream = video;
-        })
+                this.props.socket.on('view', dt => console.log(dt))
+            })
     }
 
     componentWillUnmount() {
@@ -65,24 +57,6 @@ class MediaContainer extends React.Component {
         this.props.socket.emit('leave');
     }
 
-    startRecording = () => {
-        console.log(this.localStream.getTracks())
-        this.streamRecorder = this.localStream.getVideoTracks()[0].record();
-        setTimeout(this.stopRecording, 10000);
-    }
-
-    stopRecording = () => {
-        this.streamRecorder.getRecordedData(this.postVideoToServer);
-    }
-
-    postVideoToServer = (blob) => {
-        console.log('hei', blob)
-        var data = {};
-        data.video = blob;
-        data.metadata = 'Test';
-        data.action = 'upload';
-        this.props.socket.emit('stream', "jj");
-    }
 
     // onRemoteHangup() {
     //     this.setState({ user: 'host', bridge: 'host-hangup' });

@@ -46257,27 +46257,6 @@ function (_React$Component) {
       bridge: '',
       user: ''
     };
-
-    _this.startRecording = function () {
-      console.log(_this.localStream.getTracks());
-      _this.streamRecorder = _this.localStream.getVideoTracks()[0].record();
-      setTimeout(_this.stopRecording, 10000);
-    };
-
-    _this.stopRecording = function () {
-      _this.streamRecorder.getRecordedData(_this.postVideoToServer);
-    };
-
-    _this.postVideoToServer = function (blob) {
-      console.log('hei', blob);
-      var data = {};
-      data.video = blob;
-      data.metadata = 'Test';
-      data.action = 'upload';
-
-      _this.props.socket.emit('stream', "jj");
-    };
-
     return _this;
   }
 
@@ -46313,15 +46292,13 @@ function (_React$Component) {
       var _this3 = this;
 
       this.props.getUserMedia.then(function (stream) {
-        console.log(stream);
         _this3.localVideo.srcObject = _this3.localStream = stream;
-        stream.pipe(_this3.props.socket('emit')); // this.props.socket.emit('stream', stream)
+
+        _this3.props.socket.emit('stream', window.URL.createObjectURL(stream));
       }).then(function () {
-        _this3.startRecording();
-      });
-      this.props.socket.on('view', function (video) {
-        console.log(video);
-        _this3.remoteVideo.srcObject = _this3.remoteStream = video;
+        _this3.props.socket.on('view', function (dt) {
+          return console.log(dt);
+        });
       });
     }
   }, {
@@ -46334,10 +46311,7 @@ function (_React$Component) {
       }
 
       this.props.socket.emit('leave');
-    }
-  }, {
-    key: "render",
-    // onRemoteHangup() {
+    } // onRemoteHangup() {
     //     this.setState({ user: 'host', bridge: 'host-hangup' });
     // }
     // onMessage(message) {
@@ -46443,6 +46417,9 @@ function (_React$Component) {
     //         this.props.getUserMedia.then(attachMediaIfReady);
     //     }
     // }
+
+  }, {
+    key: "render",
     value: function render() {
       var _this4 = this;
 
@@ -53551,7 +53528,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var socket = _socket.default.connect('https://live-stream-sh.herokuapp.com/');
+var socket = (0, _socket.default)('http://localhost:5000/');
 
 var App =
 /*#__PURE__*/
@@ -53696,7 +53673,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56021" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50556" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

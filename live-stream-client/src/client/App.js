@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import MediaContainer from './container/media.container';
 import MediaReciever from './container/media.reciever';
 import io from 'socket.io-client';
-const socket = io.connect('https://live-stream-sh.herokuapp.com/');
+const socket = io('http://localhost:5000/');
 
 export default class App extends React.Component{
     constructor(props) {
