@@ -52,7 +52,7 @@ const config = {
   }
 };
 
-
+var stream;
 var nms = new NodeMediaServer(config)
 nms.run();
 
@@ -71,6 +71,7 @@ nms.on('doneConnect', (id, args) => {
 });
 
 nms.on('prePublish', (id, StreamPath, args) => {
+  stream = StreamPath;
   console.log('[NodeEvent on prePublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}\n`);
 
   var url = 'http://localhost:8000'+StreamPath+'.flv';
@@ -86,15 +87,10 @@ nms.on('prePublish', (id, StreamPath, args) => {
 
 nms.on('postPublish', (id, StreamPath, args) => {
   console.log('[NodeEvent on postPublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}\n`);
-  
 });
 
 nms.on('donePublish', (id, StreamPath, args) => {
   console.log('[NodeEvent on donePublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}\n`);
-
-  shell.exec('ffmpeg -re -i rtmp://192.168.1.6/live/sh.flv -c:v copy -c:a copy -f flv rtmp://192.168.1.6/live/sh');
-// shell.exec('webpack');
-
 });
 
 nms.on('prePlay', (id, StreamPath, args) => {
@@ -111,15 +107,38 @@ nms.on('donePlay', (id, StreamPath, args) => {
   console.log('[NodeEvent on donePlay]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}\n`);
 });
 
+
+
+app.set('view engine', 'ejs');
+
 app.get('/media', (req, res) => {
   fs.readdir(__dirname + '/public/media', (err, data) => {
     if (err) throw err;
-    
-    res.status(200).json({
-      files: data,
-      url: req.protocol + '://' + req.get('host') + req.originalUrl
+    const url = data.map((link) => {
+      return req.protocol + '://' + req.get('host') + req.originalUrl + link;
+    })
+    if(stream){
+      live = req.protocol + '://localhost:8000' + stream + '.flv'
+    } else {
+      live = 'No Live'
+    }
+    res.render('media', {
+      files: url,
+      live: live
     })
   });
+})
+
+app.get('/live', (req, res) => {
+  if(stream){
+    res.render('index', {
+      url: req.protocol + '://localhost:8000' + stream + '.flv'
+    });
+  } else {
+    res.render('index', {
+      url: 'No Live Available'
+    });
+  }
 })
 
 app.use(express.static(__dirname+'/public'))

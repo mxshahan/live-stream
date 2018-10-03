@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcss.com/flv.js/1.4.0/flv.min.js"></script>
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous">
+    </script>
+    <title>Document</title>
+</head>
+
+<body>
+    <h3 id="msg">Recent Uploaded Live </h3>
+    <ul>
+        <% files.forEach(function(file) { %>
+            <li><a href="<%-file %>"><%-file %></a></li>
+        <% }) %>
+    </ul>
+    <h3 id="msg">Recent Live Running on this server (copy this and go to http://localhost:8001/live)</h3>
+    <p><%=live%></p>
+</body>
+
+</html>

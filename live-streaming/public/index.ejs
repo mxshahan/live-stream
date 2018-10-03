@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdn.bootcss.com/flv.js/1.4.0/flv.min.js"></script>
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous">
+    </script>
     <title>Document</title>
 </head>
 
@@ -13,8 +18,9 @@
     <h3 id="msg">Server URL </h3>
     <input id="link" type="text"/>
     <button id="preveiw">Preview</button>
-    <p></p>
+    <p id="live"></p>
     <br/>
+    
     <div style="display: block; width: 100%">
         <video id="videoElement" autoplay></video>
     </div>
@@ -37,6 +43,14 @@
                 flvPlayer.play();
             }
         })
+        var name = "<%= name %>";
+        console.log(name);
+
+        $.get( "http://localhost:8001/live", function( data ) {
+            console.log(data)
+            $( "#live" ).html( data );
+            alert( "Load was performed." );
+        });
     </script>
 </body>
 

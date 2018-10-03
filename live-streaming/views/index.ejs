@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcss.com/flv.js/1.4.0/flv.min.js"></script>
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous">
+    </script>
+    <title>Document</title>
+</head>
+
+<body>
+    <h3 id="msg">Server URL </h3>
+    <input id="link" type="text"/>
+    <button id="preveiw">Preview</button>
+    <p id="live"><%=url%></p>
+    <br/>
+    
+    <div style="display: block; width: 100%">
+        <video id="videoElement" autoplay></video>
+    </div>
+    <script>
+        var link = document.querySelector('#link');
+        var preview = document.querySelector('#preveiw');
+        var videoElement = document.getElementById('videoElement');
+
+        preview.addEventListener('click', (e) => {
+            if (flvjs.isSupported()) {
+                var flvPlayer = flvjs.createPlayer({
+                    type: 'flv',
+                    url: link.value
+                });
+                flvPlayer.attachMediaElement(videoElement);
+                flvPlayer.load();
+                flvPlayer.play();
+            }
+        })
+    </script>
+</body>
+
+</html>
